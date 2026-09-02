@@ -37,6 +37,30 @@
   scroll-behavior: auto !important;
 }
 
+/* ADHD-friendly: stronger, unmissable focus/hover state */
+[data-focus-outlines="true"] a:hover,
+[data-focus-outlines="true"] button:hover,
+[data-focus-outlines="true"] .game-card:hover,
+[data-focus-outlines="true"] .nav-btn.is-active,
+[data-focus-outlines="true"] *:focus-visible{
+  outline: 3px solid var(--accent-bright) !important;
+  outline-offset: 3px;
+}
+[data-focus-outlines="true"] .toggle-opt.is-active{
+  box-shadow: 0 0 0 2px var(--accent-bright);
+}
+
+/* ADHD-friendly: fewer moving/decorative parts, more breathing room */
+[data-simplify="true"] .game-card,
+[data-simplify="true"] .pixel-btn,
+[data-simplify="true"] .icon-btn{
+  transition: none !important;
+  transform: none !important;
+}
+[data-simplify="true"] .game-grid{ gap: 28px; }
+[data-simplify="true"] .page{ max-width: 900px; }
+[data-simplify="true"] .intro-glyph{ animation: none !important; }
+
 *{ box-sizing: border-box; }
 
 html, body{
@@ -450,6 +474,21 @@ a{ color: var(--accent-bright); }
   gap: 4px;
   max-width: 680px;
   margin-bottom: 20px;
+}
+.settings-subheading{
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--accent-bright);
+  margin: 22px 0 4px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--panel-border);
+}
+.settings-subheading:first-child{ margin-top: 4px; }
+.settings-subheading span{
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--text-faint);
+  margin-left: 6px;
 }
 .setting-row{
   display:flex;

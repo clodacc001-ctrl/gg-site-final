@@ -13,7 +13,7 @@ const path = require('path');
 
 const MUSIC_DIR = path.join(__dirname, '..', 'music');
 const OUT_FILE = path.join(MUSIC_DIR, 'music.json');
-const EXTS = ['.mp3', '.ogg', '.wav', '.m4a'];
+const EXTS = ['.mp3', '.ogg', '.wav', '.m4a', '.flac', '.aac', '.opus', '.weba', '.webm'];
 
 function niceName(filename) {
   const base = filename.replace(/\.[^.]+$/, '');

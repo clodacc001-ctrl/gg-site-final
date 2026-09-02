@@ -11,7 +11,10 @@
     uiAnim: true,
     pixelIntensity: 'medium',
     reducedMotion: false,
-    synthEnabled: false
+    synthEnabled: false,
+    visualizer: false,
+    focusOutlines: false,
+    simplifyUI: false
   };
 
   function load() {
@@ -39,6 +42,8 @@
     body.setAttribute('data-ui-anim', String(current.uiAnim && !current.reducedMotion));
     body.setAttribute('data-pixel', current.pixelIntensity);
     body.setAttribute('data-reduced-motion', String(current.reducedMotion));
+    body.setAttribute('data-focus-outlines', String(current.focusOutlines));
+    body.setAttribute('data-simplify', String(current.simplifyUI));
 
     if (window.GGParticles) {
       window.GGParticles.setEnabled(current.particles && !current.reducedMotion);
@@ -48,6 +53,9 @@
     }
     if (window.GGSynth) {
       window.GGSynth.setEnabled(current.synthEnabled);
+    }
+    if (window.GGVisualizer) {
+      window.GGVisualizer.setEnabled(current.visualizer && !current.reducedMotion);
     }
   }
 
