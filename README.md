@@ -2,6 +2,20 @@
 
 A small, pixel-art indie game launcher/hub. Dark reddish-purple gradient background, floating pixel particles, and a self-contained games system.
 
+## Publishing to GitHub
+
+This folder is already a git repo with an initial commit on `main`. To push it up:
+
+1. Create a new, empty repository on GitHub (don't initialize it with a README/license — this folder already has one).
+2. From inside this folder:
+
+   ```
+   git remote add origin https://github.com/<your-username>/<your-repo>.git
+   git push -u origin main
+   ```
+
+To host it live for free, GitHub Pages works well since this is a static site: in the repo's **Settings → Pages**, set the source to the `main` branch (root), then it'll be served at `https://<your-username>.github.io/<your-repo>/`.
+
 ## Running it
 
 Any static file server works, since it's plain HTML/CSS/JS. From the project folder:
