@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Block Drifter</title>
+<style>
+  html,body{ margin:0; height:100%; background:#0a0508; overflow:hidden; font-family: monospace; }
+  canvas{ display:block; width:100%; height:100%; }
+  #hud{ position:fixed; top:10px; left:14px; color:#ece1e6; font-size:16px; text-shadow:1px 1px 0 #000; }
+  #msg{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; color:#ece1e6; text-align:center; font-size:18px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">distance: <span id="score">0</span></div>
+<div id="msg"></div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+const msgEl = document.getElementById('msg');
+let W,H,DPR;
+function resize(){
+  DPR = Math.min(window.devicePixelRatio||1,2);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = W*DPR; canvas.height = H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+window.addEventListener('resize', resize); resize();
+
+let block, walls, distance, running, keys = {};
+window.addEventListener('keydown', e => { keys[e.key]=true; if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault(); if(!running) reset(); });
+window.addEventListener('keyup', e => { keys[e.key]=false; });
+canvas.addEventListener('pointerdown', () => { if(!running) reset(); });
+
+function reset(){
+  block = { x: 60, y: H/2, size: 14, vx:0, vy:0 };
+  walls = [];
+  distance = 0;
+  running = true;
+  msgEl.textContent = '';
+  for (let i=0;i<20;i++) genWallSegment(i*80);
+}
+
+let corridorSeed = 0;
+function genWallSegment(x){
+  const centerY = H/2 + Math.sin(x*0.01)* (H*0.15);
+  const gap = Math.max(90, 260 - distance*0.02);
+  walls.push({ x, topH: centerY - gap/2, botY: centerY + gap/2 });
+}
+
+function update(){
+  if (!running) return;
+  const speed = 3.2;
+  const accel = 0.5;
+  if (keys['ArrowUp']) block.vy -= accel;
+  if (keys['ArrowDown']) block.vy += accel;
+  if (keys['ArrowLeft']) block.vx -= accel;
+  if (keys['ArrowRight']) block.vx += accel;
+  block.vx *= 0.9; block.vy *= 0.9;
+  block.x += block.vx; block.y += block.vy;
+
+  block.x = Math.max(20, Math.min(W*0.4, block.x));
+  block.y = Math.max(10, Math.min(H-10, block.y));
+
+  distance += speed;
+  walls.forEach(w => w.x -= speed);
+  walls = walls.filter(w => w.x > -80);
+  const last = walls[walls.length-1];
+  if (last.x < W) genWallSegment(last.x + 80);
+
+  for (const w of walls){
+    if (block.x+block.size > w.x && block.x < w.x+80){
+      if (block.y < w.topH || block.y+block.size > w.botY){
+        running = false;
+        msgEl.innerHTML = 'you drifted into the wall<br><span style="font-size:14px;opacity:.7">tap / press a key to retry</span>';
+      }
+    }
+  }
+  scoreEl.textContent = Math.floor(distance/10);
+}
+
+function draw(){
+  ctx.fillStyle = '#0a0508';
+  ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = '#6b3a5c';
+  walls.forEach(w => {
+    ctx.fillRect(w.x, 0, 78, w.topH);
+    ctx.fillRect(w.x, w.botY, 78, H-w.botY);
+  });
+  ctx.fillStyle = '#ef9ec2';
+  ctx.fillRect(block.x, block.y, block.size, block.size);
+}
+
+function loop(){ update(); draw(); requestAnimationFrame(loop); }
+reset();
+loop();
+</script>
+</body>
+</html>

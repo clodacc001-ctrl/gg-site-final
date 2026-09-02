@@ -1,0 +1,13 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/
+
+# node (only relevant if you ever add tooling deps)
+node_modules/
+
+# local env/secrets if a backend gets added later
+.env

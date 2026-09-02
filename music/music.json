@@ -1,0 +1,26 @@
+[
+  {
+    "name": "faded menu",
+    "file": "faded-menu.mp3"
+  },
+  {
+    "name": "flicker",
+    "file": "flicker.mp3"
+  },
+  {
+    "name": "hollow arcade",
+    "file": "hollow-arcade.mp3"
+  },
+  {
+    "name": "low corridor",
+    "file": "low-corridor.mp3"
+  },
+  {
+    "name": "quiet cathode",
+    "file": "quiet-cathode.mp3"
+  },
+  {
+    "name": "static bloom",
+    "file": "static-bloom.mp3"
+  }
+]

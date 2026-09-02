@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixel Runner</title>
+<style>
+  html,body{ margin:0; height:100%; background:#0a0508; overflow:hidden; font-family: monospace; }
+  canvas{ display:block; width:100%; height:100%; image-rendering: pixelated; }
+  #hud{ position:fixed; top:10px; left:14px; color:#ece1e6; font-size:16px; text-shadow:1px 1px 0 #000; }
+  #msg{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; color:#ece1e6; text-align:center; font-size:18px; pointer-events:none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">score: <span id="score">0</span></div>
+<div id="msg"></div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+const msgEl = document.getElementById('msg');
+let W, H, DPR;
+function resize(){
+  DPR = Math.min(window.devicePixelRatio||1,2);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = W*DPR; canvas.height = H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+window.addEventListener('resize', resize); resize();
+
+const groundY = () => H - 60;
+let player, obstacles, speed, score, running, gravity;
+
+function reset(){
+  player = { x: 80, y: groundY()-24, w:20, h:24, vy:0, onGround:true };
+  obstacles = [];
+  speed = 4.2;
+  score = 0;
+  gravity = 0.6;
+  running = true;
+  msgEl.textContent = '';
+  spawnTimer = 0;
+}
+let spawnTimer = 0;
+
+function jump(){
+  if (!running) { reset(); return; }
+  if (player.onGround){ player.vy = -11; player.onGround = false; }
+}
+window.addEventListener('keydown', e => { if (e.code==='Space'){ e.preventDefault(); jump(); }});
+canvas.addEventListener('pointerdown', jump);
+
+function spawnObstacle(){
+  const h = 18 + Math.random()*22;
+  obstacles.push({ x: W+20, y: groundY()-h, w: 14, h });
+}
+
+function update(){
+  if (!running) return;
+  speed += 0.0025;
+  player.vy += gravity;
+  player.y += player.vy;
+  if (player.y >= groundY()-player.h){
+    player.y = groundY()-player.h;
+    player.vy = 0;
+    player.onGround = true;
+  }
+  spawnTimer -= 1;
+  if (spawnTimer <= 0){
+    spawnObstacle();
+    spawnTimer = 55 + Math.random()*45 - speed*3;
+  }
+  obstacles.forEach(o => o.x -= speed);
+  obstacles = obstacles.filter(o => o.x + o.w > -10);
+
+  for (const o of obstacles){
+    if (player.x < o.x+o.w && player.x+player.w > o.x && player.y < o.y+o.h && player.y+player.h > o.y){
+      running = false;
+      msgEl.innerHTML = 'you crashed<br><span style="font-size:14px;opacity:.7">tap / space to retry</span>';
+    }
+  }
+  score += 1;
+  scoreEl.textContent = Math.floor(score/10);
+}
+
+function draw(){
+  ctx.fillStyle = '#0a0508';
+  ctx.fillRect(0,0,W,H);
+
+  // ground
+  ctx.fillStyle = '#2a1230';
+  ctx.fillRect(0, groundY(), W, H-groundY());
+  ctx.fillStyle = '#6b3a5c';
+  ctx.fillRect(0, groundY(), W, 3);
+
+  // player
+  ctx.fillStyle = '#ef9ec2';
+  ctx.fillRect(player.x, player.y, player.w, player.h);
+
+  // obstacles
+  ctx.fillStyle = '#c9626a';
+  obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
+}
+
+function loop(){
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+reset();
+loop();
+</script>
+</body>
+</html>

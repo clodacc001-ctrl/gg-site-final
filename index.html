@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>The GG Site</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<!-- ============ INTRO SCREEN ============ -->
+<section id="intro-screen" class="screen">
+  <div class="intro-inner">
+    <div class="intro-glyph" aria-hidden="true">◆</div>
+    <h1 class="intro-title">THE GG SITE</h1>
+    <p class="intro-subtitle">a small collection of games, kept somewhere quiet</p>
+    <button id="enter-btn" class="pixel-btn pixel-btn--primary">
+      <span class="btn-arrow">▸</span> ENTER
+    </button>
+    <p class="intro-hint">press enter or click above</p>
+  </div>
+</section>
+
+<!-- ============ MAIN HUB ============ -->
+<div id="hub" class="screen hub hidden">
+
+  <header class="hub-header">
+    <div class="hub-logo" data-nav="games">
+      <span class="hub-logo-glyph">◆</span>
+      <span class="hub-logo-text">THE GG SITE</span>
+    </div>
+
+    <nav class="hub-nav" id="hub-nav">
+      <button class="nav-btn is-active" data-nav="games">Games</button>
+      <button class="nav-btn" data-nav="recommend">Recommendations</button>
+      <button class="nav-btn" data-nav="settings">Settings</button>
+      <button class="nav-btn" data-nav="about">About</button>
+    </nav>
+
+    <button id="music-toggle" class="icon-btn" title="Mute / Unmute music" aria-label="Mute or unmute music">
+      <span id="music-icon">♪</span>
+    </button>
+
+    <button id="nav-burger" class="icon-btn burger" aria-label="Open menu">≡</button>
+  </header>
+
+  <!-- ---------- GAMES PAGE ---------- -->
+  <main class="page is-active" id="page-games" data-page="games">
+    <div class="page-heading">
+      <h2>GAMES</h2>
+      <p class="page-sub">choose something to play</p>
+    </div>
+    <div id="game-grid" class="game-grid">
+      <!-- populated by js -->
+    </div>
+  </main>
+
+  <!-- ---------- RECOMMENDATIONS PAGE ---------- -->
+  <main class="page" id="page-recommend" data-page="recommend">
+    <div class="page-heading">
+      <h2>RECOMMENDATIONS</h2>
+      <p class="page-sub">suggest a game for the site &mdash; this doesn't add it automatically, it just lets us know</p>
+    </div>
+
+    <form id="recommend-form" class="panel form-panel">
+      <label class="field">
+        <span>Game name *</span>
+        <input type="text" id="rec-name" required maxlength="80" placeholder="e.g. Celeste">
+      </label>
+
+      <label class="field">
+        <span>Link (optional)</span>
+        <input type="url" id="rec-link" maxlength="300" placeholder="https://...">
+      </label>
+
+      <label class="field">
+        <span>Short description</span>
+        <textarea id="rec-desc" maxlength="400" rows="3" placeholder="What is this game?"></textarea>
+      </label>
+
+      <label class="field">
+        <span>Why do you recommend it?</span>
+        <textarea id="rec-why" maxlength="400" rows="3" placeholder="What makes it worth adding?"></textarea>
+      </label>
+
+      <label class="field">
+        <span>Your name / username (optional)</span>
+        <input type="text" id="rec-user" maxlength="60" placeholder="anonymous">
+      </label>
+
+      <button type="submit" class="pixel-btn pixel-btn--primary">SUBMIT RECOMMENDATION</button>
+      <p id="rec-status" class="form-status" role="status"></p>
+    </form>
+
+    <div class="panel note-panel">
+      <p><strong>Note:</strong> recommendations aren't wired to a live server on this build, so they're saved locally in your browser instead of pretending to send somewhere. See <code>js/recommend.js</code> for a ready-made spot to plug in a real backend endpoint.</p>
+    </div>
+
+    <div id="local-rec-list" class="local-rec-list"></div>
+  </main>
+
+  <!-- ---------- SETTINGS PAGE ---------- -->
+  <main class="page" id="page-settings" data-page="settings">
+    <div class="page-heading">
+      <h2>SETTINGS</h2>
+      <p class="page-sub">tune the site to your liking &mdash; saved on this device</p>
+    </div>
+
+    <div class="panel settings-panel">
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span>Music</span>
+          <span class="setting-desc">mute the background tracks</span>
+        </div>
+        <div class="toggle-group" data-setting="musicMuted">
+          <button data-value="false" class="toggle-opt">On</button>
+          <button data-value="true" class="toggle-opt">Muted</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span>Synthesizer</span>
+          <span class="setting-desc">a small playable pixel keyboard alongside the music</span>
+        </div>
+        <div class="toggle-group" data-setting="synthEnabled">
+          <button data-value="false" class="toggle-opt">Off</button>
+          <button data-value="true" class="toggle-opt">On</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span>Background particles</span>
+          <span class="setting-desc">floating pixel motes behind the UI</span>
+        </div>
+        <div class="toggle-group" data-setting="particles">
+          <button data-value="true" class="toggle-opt">On</button>
+          <button data-value="false" class="toggle-opt">Off</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span>Background animation</span>
+          <span class="setting-desc">slow gradient drift</span>
+        </div>
+        <div class="toggle-group" data-setting="bgAnim">
+          <button data-value="true" class="toggle-opt">On</button>
+          <button data-value="false" class="toggle-opt">Off</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span>UI animation</span>
+          <span class="setting-desc">menu + button motion</span>
+        </div>
+        <div class="toggle-group" data-setting="uiAnim">
+          <button data-value="true" class="toggle-opt">On</button>
+          <button data-value="false" class="toggle-opt">Off</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span>Pixel UI intensity</span>
+          <span class="setting-desc">how chunky the pixel styling looks</span>
+        </div>
+        <div class="toggle-group" data-setting="pixelIntensity">
+          <button data-value="low" class="toggle-opt">Low</button>
+          <button data-value="medium" class="toggle-opt">Medium</button>
+          <button data-value="high" class="toggle-opt">High</button>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span>Reduced motion</span>
+          <span class="setting-desc">turns off all non-essential animation</span>
+        </div>
+        <div class="toggle-group" data-setting="reducedMotion">
+          <button data-value="false" class="toggle-opt">Off</button>
+          <button data-value="true" class="toggle-opt">On</button>
+        </div>
+      </div>
+
+    </div>
+
+    <button id="reset-settings" class="pixel-btn">RESET TO DEFAULTS</button>
+  </main>
+
+  <!-- ---------- ABOUT PAGE ---------- -->
+  <main class="page" id="page-about" data-page="about">
+    <div class="page-heading">
+      <h2>ABOUT</h2>
+      <p class="page-sub">what this place is</p>
+    </div>
+    <div class="panel about-panel">
+      <p>The GG Site is a small hub for games &mdash; a quiet corner of the internet where a handful of little projects live side by side.</p>
+      <p>Every game here keeps its own folder inside <code>/games</code>. The site reads a short <code>README.md</code> from each folder for its description, so adding a new game is as simple as dropping in a new folder and updating the manifest.</p>
+      <p>Nothing here is trying to be a platform. It's just a launcher.</p>
+    </div>
+  </main>
+
+</div>
+
+<!-- ============ GAME PLAYER OVERLAY ============ -->
+<div id="game-player" class="screen game-player hidden">
+  <div class="player-bar">
+    <button id="player-back" class="pixel-btn player-back">◂ BACK TO HUB</button>
+    <span id="player-title" class="player-title"></span>
+  </div>
+  <iframe id="player-frame" title="Game" allowfullscreen></iframe>
+</div>
+
+<script src="js/particles.js"></script>
+<script src="js/music.js"></script>
+<script src="js/synth.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/games.js"></script>
+<script src="js/recommend.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "block-drifter",
+    "name": "Block Drifter",
+    "folder": "block-drifter",
+    "entry": "index.html",
+    "thumbnail": null,
+    "description": "Guide a drifting block through a narrowing pixel corridor using just the arrow keys."
+  },
+  {
+    "id": "pixel-runner",
+    "name": "Pixel Runner",
+    "folder": "pixel-runner",
+    "entry": "index.html",
+    "thumbnail": null,
+    "description": "A tiny one-button endless runner. Jump the gaps, don't hit the spikes, see how far you get."
+  },
+  {
+    "id": "whispers-in-the-dark",
+    "name": "Whispers In The Dark",
+    "folder": "whispers-in-the-dark",
+    "entry": "index.html",
+    "thumbnail": null,
+    "description": "No description available."
+  }
+]

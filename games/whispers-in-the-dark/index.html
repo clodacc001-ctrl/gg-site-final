@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whispers in the Dark</title>
+<style>
+  html,body{ margin:0; height:100%; background:#050308; overflow:hidden; font-family: monospace; }
+  canvas{ display:block; width:100%; height:100%; }
+  #hud{ position:fixed; top:10px; left:14px; color:#a68c9b; font-size:16px; }
+  #msg{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; color:#ece1e6; text-align:center; font-size:16px; pointer-events:none; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">motes found: <span id="score">0</span> / 8</div>
+<div id="msg"></div>
+<script>
+// A small light-radius exploration game: move a lantern with the mouse/touch,
+// find the glowing motes hidden in the dark before they drift away.
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+const msgEl = document.getElementById('msg');
+let W,H,DPR;
+function resize(){
+  DPR = Math.min(window.devicePixelRatio||1,2);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = W*DPR; canvas.height = H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+window.addEventListener('resize', resize); resize();
+
+let mx = W/2, my = H/2;
+window.addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; });
+window.addEventListener('pointerdown', e => { mx = e.clientX; my = e.clientY; });
+
+let motes, found;
+function reset(){
+  motes = Array.from({length:8}, () => ({
+    x: 60 + Math.random()*(W-120),
+    y: 60 + Math.random()*(H-120),
+    found:false,
+    phase: Math.random()*Math.PI*2
+  }));
+  found = 0;
+  msgEl.textContent = '';
+}
+
+function update(){
+  const radius = 90;
+  motes.forEach(m => {
+    if (m.found) return;
+    const d = Math.hypot(m.x-mx, m.y-my);
+    if (d < radius*0.5){
+      m.found = true;
+      found++;
+      scoreEl.textContent = found;
+      if (found === motes.length){
+        msgEl.innerHTML = 'all motes found<br><span style="font-size:13px;opacity:.7">click to search again</span>';
+      }
+    }
+  });
+}
+canvas.addEventListener('pointerdown', () => { if(found===motes.length) reset(); });
+
+function draw(){
+  ctx.fillStyle = '#050308';
+  ctx.fillRect(0,0,W,H);
+
+  const radius = 130;
+  const grad = ctx.createRadialGradient(mx,my,0,mx,my,radius);
+  grad.addColorStop(0, 'rgba(201,98,143,0.18)');
+  grad.addColorStop(1, 'rgba(5,3,8,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(mx,my,radius,0,Math.PI*2);
+  ctx.fill();
+
+  const t = performance.now()/500;
+  motes.forEach(m => {
+    if (m.found) return;
+    const d = Math.hypot(m.x-mx, m.y-my);
+    if (d > radius) return;
+    const flicker = 0.5 + 0.5*Math.sin(t + m.phase);
+    ctx.fillStyle = `rgba(239,158,194,${0.3+0.5*flicker})`;
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, 4, 0, Math.PI*2);
+    ctx.fill();
+  });
+}
+
+function loop(){ update(); draw(); requestAnimationFrame(loop); }
+reset();
+loop();
+</script>
+</body>
+</html>
