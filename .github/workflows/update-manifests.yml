@@ -1,0 +1,42 @@
+name: Update game & music manifests
+
+# Runs automatically whenever games/ or music/ change on main, so adding a
+# new game or track is just: drop the folder/file in, commit, push — no
+# need to run the generator scripts locally.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'games/**'
+      - 'music/**'
+      - 'tools/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Regenerate games.json
+        run: node tools/generate-manifest.js
+
+      - name: Regenerate music.json
+        run: node tools/generate-music-manifest.js
+
+      - name: Commit updated manifests (if changed)
+        run: |
+          git config user.name "gg-site-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add games/games.json music/music.json
+          git diff --cached --quiet || git commit -m "Auto-update game/music manifests"
+          git push

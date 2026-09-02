@@ -560,7 +560,9 @@ a{ color: var(--accent-bright); }
   font-family: var(--font-display);
   font-size: 12px;
   color: var(--text-dim);
+  flex: 1;
 }
+.player-fullscreen{ margin-left: auto; }
 #player-frame{
   flex: 1;
   width: 100%;

@@ -32,15 +32,15 @@ Then open `http://localhost:8080`. (Opening `index.html` directly with `file://`
 2. Put the game's own `index.html` (and any assets it needs) inside that folder. The game runs in its own iframe, fully sandboxed from the hub's code.
 3. Optionally add a `README.md` inside that same folder — its first paragraph becomes the game's description on the site. If there's no `README.md`, the card just shows "No description available."
 4. Optionally add a `thumbnail.png` (or `.jpg`/`.gif`) inside the folder to give the card a custom image.
-5. Regenerate the manifest so the site picks up the new folder:
+5. Commit and push.
+
+If this repo is on GitHub, that's it — a GitHub Action (`.github/workflows/update-manifests.yml`) automatically regenerates `games/games.json` whenever anything under `games/` changes on `main`, and commits the update for you. Locally, or if you're not using GitHub Actions, run it yourself instead:
 
    ```
    node tools/generate-manifest.js
    ```
 
-That's it — no other code needs to change. `games/games.json` is the file the site actually reads; the script keeps it in sync with what's on disk.
-
-(Browsers can't list a folder's contents directly for security reasons, so this manifest-plus-script is the static-site equivalent of "auto-detecting" games. If you later add a real backend, you can replace `tools/generate-manifest.js` with an API endpoint that returns the same JSON shape and nothing else on the front end needs to change.)
+(Browsers can't list a folder's contents directly for security reasons, so this manifest is the static-site equivalent of "auto-detecting" games — the Action just means you never have to run the script by hand.)
 
 ## Music
 
@@ -52,11 +52,17 @@ node tools/generate-music-manifest.js
 
 One track is picked at random each time the site is opened, played at a fixed quiet volume (0.2), and fades in/out around the mute toggle and the game player. Music always ducks to silent the moment a game is opened, and fades back in when the player returns to the hub. On the very first visit ever (tracked locally, before any preference is saved), the site stays silent rather than autoplaying — every visit after that follows the saved mute setting.
 
+The same GitHub Action that regenerates `games.json` also regenerates `music/music.json` whenever anything under `music/` changes — so adding a track is just: drop the file in `music/`, commit, push.
+
 The music is routed through a small Web Audio graph (not just a plain `<audio>` tag) so the visualizer can read live frequency data from it.
 
 ## Synthesizer
 
 Turning "Synthesizer" on in Settings adds a small playable pixel keyboard in the corner of the hub (keys A S D F G H J K, or click/tap). It shares the music's mute state — muting the music silences the synth too — and goes quiet while a game is open, same as the music.
+
+## Playing games fullscreen
+
+The game player has a fullscreen button (⛶) next to the back button, which fullscreens the game itself (bar included, so you can still get back out). Press Esc or the button again to exit.
 
 ## Focus & Sensory settings (ADHD-friendly)
 

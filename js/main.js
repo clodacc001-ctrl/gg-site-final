@@ -16,6 +16,7 @@
   const playerFrame = document.getElementById('player-frame');
   const playerTitle = document.getElementById('player-title');
   const playerBack = document.getElementById('player-back');
+  const playerFullscreen = document.getElementById('player-fullscreen');
 
   const VISITED_KEY = 'gg-site-visited-before';
 
@@ -135,6 +136,10 @@
   }
 
   function closeGame() {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
     player.classList.remove('visible');
     setTimeout(() => {
       player.classList.add('hidden');
@@ -145,6 +150,30 @@
   }
 
   playerBack.addEventListener('click', closeGame);
+
+  // -------------------- fullscreen --------------------
+  function isFullscreen() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+  }
+
+  function updateFullscreenIcon() {
+    playerFullscreen.textContent = isFullscreen() ? '✕' : '⛶';
+    playerFullscreen.title = isFullscreen() ? 'Exit fullscreen' : 'Fullscreen';
+  }
+
+  playerFullscreen.addEventListener('click', () => {
+    if (isFullscreen()) {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    } else {
+      const target = player; // fullscreen the whole player, bar included
+      if (target.requestFullscreen) target.requestFullscreen();
+      else if (target.webkitRequestFullscreen) target.webkitRequestFullscreen();
+    }
+  });
+
+  document.addEventListener('fullscreenchange', updateFullscreenIcon);
+  document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
 
   window.GGMain = { openGame, closeGame };
 })();
