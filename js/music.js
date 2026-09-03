@@ -10,7 +10,7 @@
    are all just gain-node ramps.
    ========================================================== */
 (function () {
-  const BASE_VOLUME = 0.2;
+  const BASE_VOLUME = 0.1;
   const FADE_SEC = 0.7;
 
   let manifest = [];

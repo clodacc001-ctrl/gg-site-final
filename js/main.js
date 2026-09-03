@@ -134,7 +134,15 @@
     clearTimeout(loadWatchTimer);
 
     let loaded = false;
-    playerFrame.onload = () => { loaded = true; };
+    playerFrame.onload = () => {
+      loaded = true;
+      // Keyboard input defaults to whatever element has focus in the
+      // parent page (e.g. the "PLAY" button just clicked) — without
+      // explicitly moving focus into the iframe, arrow keys/space/WASD
+      // never reach the game at all. This is what was causing "can't
+      // move" for some games.
+      focusGameFrame();
+    };
     playerFrame.src = `games/${game.folder}/${game.entry}`;
 
     // If the game hasn't fired a load event within a few seconds, it's
@@ -148,6 +156,13 @@
     }, 6000);
   }
 
+  function focusGameFrame() {
+    try {
+      playerFrame.focus();
+      if (playerFrame.contentWindow) playerFrame.contentWindow.focus();
+    } catch (e) { /* cross-origin or not ready yet — ignore */ }
+  }
+
   function openGame(game) {
     activeGame = game;
     playerTitle.textContent = game.name;
@@ -159,6 +174,13 @@
     window.GGMusic.duck();
     if (window.GGSynth) window.GGSynth.duck();
   }
+
+  // Clicking anywhere on the frame itself re-focuses it — covers cases
+  // where focus drifted back to the page (e.g. after a fullscreen toggle).
+  playerFrame.addEventListener('load', focusGameFrame);
+  player.addEventListener('click', (e) => {
+    if (e.target === playerFrame) focusGameFrame();
+  });
 
   playerRetry.addEventListener('click', () => {
     if (activeGame) loadGameFrame(activeGame);
@@ -203,8 +225,8 @@
     }
   });
 
-  document.addEventListener('fullscreenchange', updateFullscreenIcon);
-  document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+  document.addEventListener('fullscreenchange', () => { updateFullscreenIcon(); focusGameFrame(); });
+  document.addEventListener('webkitfullscreenchange', () => { updateFullscreenIcon(); focusGameFrame(); });
 
   window.GGMain = { openGame, closeGame };
 })();

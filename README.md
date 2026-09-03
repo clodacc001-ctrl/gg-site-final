@@ -50,7 +50,7 @@ Background music plays real audio files from the `music/` folder, listed in `mus
 node tools/generate-music-manifest.js
 ```
 
-One track is picked at random each time the site is opened, played at a fixed quiet volume (0.2), and fades in/out around the mute toggle and the game player. Music always ducks to silent the moment a game is opened, and fades back in when the player returns to the hub. On the very first visit ever (tracked locally, before any preference is saved), the site stays silent rather than autoplaying — every visit after that follows the saved mute setting.
+One track is picked at random each time the site is opened, played at a fixed quiet volume (0.1, deliberately background-level), and fades in/out around the mute toggle and the game player. Music always ducks to silent the moment a game is opened, and fades back in when the player returns to the hub. On the very first visit ever (tracked locally, before any preference is saved), the site stays silent rather than autoplaying — every visit after that follows the saved mute setting.
 
 The same GitHub Action that regenerates `games.json` also regenerates `music/music.json` whenever anything under `music/` changes — so adding a track is just: drop the file in `music/`, commit, push.
 
