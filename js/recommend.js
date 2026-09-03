@@ -15,7 +15,7 @@
   //      50/month), no server of your own required.
   // Until you set this, submissions are only saved locally in the
   // visitor's browser — never silently discarded, but never sent anywhere.
-  const ENDPOINT = null; // e.g. 'https://formspree.io/f/xxxxxxxx'
+    const ENDPOINT = null; // e.g. 'https://formspree.io/f/xoeqlqvq'
 
   function loadLocal() {
     try {
