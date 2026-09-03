@@ -60,6 +60,27 @@ The music is routed through a small Web Audio graph (not just a plain `<audio>` 
 
 Turning "Synthesizer" on in Settings adds a small playable pixel keyboard in the corner of the hub (keys A S D F G H J K, or click/tap). It shares the music's mute state — muting the music silences the synth too — and goes quiet while a game is open, same as the music.
 
+## Recommendations backend
+
+`js/recommend.js` has an `ENDPOINT` constant near the top. Set it to a real form endpoint and submissions actually get sent, not just saved locally. Easiest option for a static GitHub Pages site:
+
+1. Go to [formspree.io](https://formspree.io), sign up free, create a new form.
+2. Copy the endpoint it gives you (looks like `https://formspree.io/f/xxxxxxxx`).
+3. Paste it into `ENDPOINT` in `js/recommend.js`.
+4. If your site's Content-Security-Policy meta tag (in `index.html`) has been changed, make sure Formspree's domain stays in `connect-src` and `form-action` — it's included by default.
+
+Free tier is 50 submissions/month, emailed straight to you. No server to host or maintain. Any other backend that accepts a `POST` of JSON works the same way — just point `ENDPOINT` at it. Until it's set, submissions are saved to `localStorage` and clearly labeled as local-only, never silently dropped and never claimed as sent when they weren't.
+
+## Safety: broken code, blocked loads, and unexpected redirects
+
+`js/watchdog.js` loads first, before anything else, and does three concrete things:
+
+- **Catches script errors and failed resource loads** on this site and logs/reports them instead of leaving a silently broken page.
+- **Detects a game that won't load** — if a game's iframe hasn't fired its load event within 6 seconds (blocked by an extension/content filter, or its files are missing), the player shows a clear "didn't load" message with a retry button instead of a blank frame.
+- **Sandboxes every game's iframe** (`sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-modals"`, deliberately missing `allow-top-navigation` and `allow-popups`) so a game — malicious or just buggy — cannot redirect the whole tab or spawn pop-ups. This is a real, enforced browser restriction, not just a warning.
+- **Warns before the tab navigates away** to *anywhere*, toggleable in Settings under "Redirect / pop-up protection." This is the honest limit of what a webpage can do about redirects: JavaScript can't stop a browser extension from acting or choose where you land, but it can trigger the browser's own confirmation prompt before any navigation, giving you a chance to cancel one you didn't start. It's on by default; turn it off in Settings if you find it fires on your own normal refreshes/tab closes too.
+- **Blocks `window.open()` calls** made from this page's own JS context (the pattern ad-injection scripts use) — the site never calls it itself, so this only ever stops something that shouldn't be there.
+
 ## Playing games fullscreen
 
 The game player has a fullscreen button (⛶) next to the back button, which fullscreens the game itself (bar included, so you can still get back out). Press Esc or the button again to exit.

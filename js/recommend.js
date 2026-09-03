@@ -6,10 +6,16 @@
 (function () {
   const STORAGE_KEY = 'gg-site-recommendations-v1';
 
-  // Point this at a real endpoint when a backend exists, e.g.
-  //   const ENDPOINT = 'https://your-api.example.com/recommendations';
-  // Expected: POST JSON, 2xx response on success.
-  const ENDPOINT = null;
+  // Point this at a real form endpoint to actually receive submissions.
+  // The easiest option for a static GitHub Pages site is Formspree:
+  //   1. Go to https://formspree.io, sign up free, create a new form.
+  //   2. Copy the endpoint it gives you, looks like:
+  //        https://formspree.io/f/xxxxxxxx
+  //   3. Paste it below. Submissions then get emailed to you (free tier:
+  //      50/month), no server of your own required.
+  // Until you set this, submissions are only saved locally in the
+  // visitor's browser — never silently discarded, but never sent anywhere.
+  const ENDPOINT = null; // e.g. 'https://formspree.io/f/xxxxxxxx'
 
   function loadLocal() {
     try {
@@ -51,7 +57,7 @@
     try {
       const res = await fetch(ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(payload)
       });
       return { ok: res.ok, reason: res.ok ? null : `status-${res.status}` };

@@ -3,12 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; media-src 'self'; connect-src 'self' https://formspree.io; frame-src 'self'; base-uri 'self'; form-action 'self' https://formspree.io;">
 <title>The GG Site</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<script src="js/watchdog.js"></script>
 
 <canvas id="particle-canvas"></canvas>
 
@@ -97,7 +99,7 @@
     </form>
 
     <div class="panel note-panel">
-      <p><strong>Note:</strong> recommendations aren't wired to a live server on this build, so they're saved locally in your browser instead of pretending to send somewhere. See <code>js/recommend.js</code> for a ready-made spot to plug in a real backend endpoint.</p>
+      <p><strong>Note:</strong> recommendations are saved locally in your browser unless a real backend has been connected (see <code>js/recommend.js</code> — Formspree is the easiest free option). Nothing is ever claimed as "sent" unless it actually was.</p>
     </div>
 
     <div id="local-rec-list" class="local-rec-list"></div>
@@ -120,6 +122,19 @@
         <div class="toggle-group" data-setting="musicMuted">
           <button data-value="false" class="toggle-opt">On</button>
           <button data-value="true" class="toggle-opt">Muted</button>
+        </div>
+      </div>
+
+      <div class="settings-subheading">Safety</div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span>Redirect / pop-up protection</span>
+          <span class="setting-desc">warns before this tab navigates away unexpectedly, and blocks pop-ups triggered by the site's own code</span>
+        </div>
+        <div class="toggle-group" data-setting="navGuard">
+          <button data-value="true" class="toggle-opt">On</button>
+          <button data-value="false" class="toggle-opt">Off</button>
         </div>
       </div>
 
@@ -254,7 +269,13 @@
     <span id="player-title" class="player-title"></span>
     <button id="player-fullscreen" class="icon-btn player-fullscreen" title="Fullscreen" aria-label="Toggle fullscreen">⛶</button>
   </div>
-  <iframe id="player-frame" title="Game" allowfullscreen></iframe>
+  <div id="player-fallback" class="player-fallback hidden">
+    <p>This game didn't load. It may be blocked by a browser extension, a network/content filter, or the game's own files may be missing.</p>
+    <button id="player-retry" class="pixel-btn">RETRY</button>
+  </div>
+  <iframe id="player-frame" title="Game" allowfullscreen
+    sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-modals"
+    referrerpolicy="no-referrer"></iframe>
 </div>
 
 <script src="js/particles.js"></script>

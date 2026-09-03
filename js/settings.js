@@ -14,7 +14,8 @@
     synthEnabled: false,
     visualizer: false,
     focusOutlines: false,
-    simplifyUI: false
+    simplifyUI: false,
+    navGuard: true
   };
 
   function load() {

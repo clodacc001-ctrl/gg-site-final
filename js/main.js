@@ -17,6 +17,10 @@
   const playerTitle = document.getElementById('player-title');
   const playerBack = document.getElementById('player-back');
   const playerFullscreen = document.getElementById('player-fullscreen');
+  const playerFallback = document.getElementById('player-fallback');
+  const playerRetry = document.getElementById('player-retry');
+  let loadWatchTimer = null;
+  let activeGame = null;
 
   const VISITED_KEY = 'gg-site-visited-before';
 
@@ -124,18 +128,45 @@
   refreshSettingUI();
 
   // -------------------- game player --------------------
-  function openGame(game) {
-    playerTitle.textContent = game.name;
+  function loadGameFrame(game) {
+    playerFallback.classList.add('hidden');
+    playerFrame.classList.remove('hidden');
+    clearTimeout(loadWatchTimer);
+
+    let loaded = false;
+    playerFrame.onload = () => { loaded = true; };
     playerFrame.src = `games/${game.folder}/${game.entry}`;
+
+    // If the game hasn't fired a load event within a few seconds, it's
+    // most likely blocked (extension, content filter) or its files are
+    // missing — show a clear fallback instead of a blank frame.
+    loadWatchTimer = setTimeout(() => {
+      if (!loaded) {
+        playerFrame.classList.add('hidden');
+        playerFallback.classList.remove('hidden');
+      }
+    }, 6000);
+  }
+
+  function openGame(game) {
+    activeGame = game;
+    playerTitle.textContent = game.name;
     player.classList.remove('hidden');
     requestAnimationFrame(() => player.classList.add('visible'));
+    loadGameFrame(game);
 
     // Site music (and the synth) must fully stop overlapping with a game's own audio.
     window.GGMusic.duck();
     if (window.GGSynth) window.GGSynth.duck();
   }
 
+  playerRetry.addEventListener('click', () => {
+    if (activeGame) loadGameFrame(activeGame);
+  });
+
   function closeGame() {
+    clearTimeout(loadWatchTimer);
+    activeGame = null;
     if (document.fullscreenElement || document.webkitFullscreenElement) {
       if (document.exitFullscreen) document.exitFullscreen();
       else if (document.webkitExitFullscreen) document.webkitExitFullscreen();

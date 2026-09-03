@@ -570,6 +570,43 @@ a{ color: var(--accent-bright); }
   background: #000;
 }
 
+.player-fallback{
+  flex: 1;
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+  gap: 18px;
+  padding: 30px;
+  text-align:center;
+  color: var(--text-dim);
+  font-size: 18px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.player-fallback.hidden{ display:none; }
+
+/* ==========================================================
+   WATCHDOG TOAST
+   ========================================================== */
+.watchdog-toast{
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: var(--panel-bg);
+  border: var(--px) solid var(--panel-border);
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.4), 4px 4px 0 rgba(0,0,0,0.5);
+  color: var(--text-main);
+  padding: 12px 18px;
+  font-size: 16px;
+  max-width: min(90vw, 420px);
+  text-align:center;
+}
+.watchdog-toast.warn{ border-color: var(--danger); color: var(--danger); }
+.watchdog-toast.hidden{ display:none; }
+
 /* ==========================================================
    SYNTH PANEL
    ========================================================== */
